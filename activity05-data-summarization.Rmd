@@ -1,6 +1,6 @@
 ---
 title: "Activity 5"
-author: "Name"
+author: "Sajal"
 output: github_document
 editor_options: 
   markdown: 
@@ -28,7 +28,8 @@ We read in the same data from Activity 4 below, but notice that this code is now
 Compare this code output to the `load_data` chunk in your knitted Activity 4 `.md` report.
 What does enclosing an assignment code (i.e., `object_name <- r_code`) in parentheses do?
 
-**Response**:
+**Response**: Executes the response into console.
+Shows the datatable.
 
 ### Data Codebook
 
@@ -86,6 +87,13 @@ There are a number of ways to create a code chunk:
 
 ```{r median_earnings, message=FALSE}
 
+median_earnings <- college_recent_grads %>%
+  summarise(
+    median_full_time = median(median), 
+  )
+
+print(median_earnings)
+
 ```
 
 ![](README-img/noun_pause.png) **Planned Pause Point**: If you have any questions, contact your instructor.
@@ -99,6 +107,20 @@ Note that wWhen I obtain numerical summaries for variables, I like to include th
 1.  Below, create a code chunk and name it `summary_earnings`. Make sure there is an empty line above and below the code chunk.
 2.  Specify that you want to use the `college_recent_grads` dataset, *then*, using the appropriate functions from `{dplyr}`, obtain the sample size (i.e., *n*umber of observations), *mean*, *s*tandard *d*eviation, *min*imum, *median*, and *max*imum summaries for the variable "median earnings of full-time, year-round workers".
 
+```{r summary_earnings, message=FALSE}
+
+college_recent_grads %>%
+  summarise(
+    count = n(),
+    sd_earn = sd(median),
+    minimum_earn = min(median),
+    maximum_earn = max(median),
+    mean_earn = mean(median),
+    median_earn = median(median), 
+  )
+
+```
+
 -   Be careful when you name your output summaries as we are dealing with things that could use the same name as functions that you will be using (i.e., "median").
 
 Provide a discussion on what you believe the distribution of median earnings will look like.
@@ -106,7 +128,7 @@ You should discuss the measures of center, spread, and potential shape only usin
 DO NOT create any data visualizations here.
 Use your understanding of how these numerical summaries are related to the measures of center, spread, and potential shape.
 
-**Response**:
+**Response**: The average earning is 36000, but there is a low variation in the data set comparatively.
 
 ### Median Earnings by Major Category
 
@@ -117,12 +139,29 @@ Now we will see how the different major categories compare to the overall distri
 1.  Below, create a code chunk and name it `major_earnings`. Make sure there is an empty line above and below the code chunk.
 2.  Specify that you want to use the `college_recent_grads` dataset, *then*, using the appropriate functions from `{dplyr}`, obtain the similar summaries of the variable "median earnings of full-time, year-round workers" as your `summary_earnings` code chunk, except now *by* each `major_category`.
 
+```{r major_earnings, message=FALSE}
+
+college_recent_grads %>%
+  group_by(major_category) %>%
+  summarise(
+    count = n(),
+    sd_earn = sd(median),
+    minimum_earn = min(median),
+    maximum_earn = max(median),
+    mean_earn = mean(median),
+    median_earn = median(median), 
+  ) %>%
+  knitr::kable()
+
+```
+
 Is anything noteworthy when comparing your output from `summary_earnings` to `major_earnings`?
 Also, compare your code in `summary_earnings` to `major_earnings`.
 What is the same?
 Different?
 
-**Response**:
+**Response**: You can have insight on individual major earnings.
+For instance, engineering has the highest maximum earnings as well as count.
 
 Before we continue, knit your document and take note of what the output for your `major_earnings` code chunk looks like.
 
@@ -134,7 +173,7 @@ Knit your document and look at the output for your `major_earnings` code chunk.
 What changed about the output?
 When would this `knitr::kable` code be useful?
 
-**Response**:
+**Response**: The output looks is well formatted in tabular structure which is good for presentations and analysis.
 
 ![](README-img/noun_pause.png) **Planned Pause Point**: If you have any questions, contact your instructor.
 Otherwise feel free to continue on.
@@ -146,7 +185,17 @@ Let us see how well your descriptions in the [Median Earnings by Major Category]
 1.  Below, create a code chunk and name it `major_boxplot`.
 2.  Plot the distribution of the variable `median` earnings of full-time, year-round workers for each `major_category` using the *boxplot* and *jitter* geometries.
 
-Provide a discussion on how your descriptions in the Median Earnings by Major Category section compares.
+Provide a discussion on how your descriptions in the Median Earnings by Major Category section compares.'
+
+```{r major_boxplot, message=FALSE, fig.width = 10}
+
+ggplot(
+  college_recent_grads, mapping = aes(y = median, x = major_category)) +
+  geom_boxplot() +
+  geom_jitter() +
+  theme(text = element_text(size = 8))
+
+```
 
 **Response**:
 
@@ -168,9 +217,22 @@ Here we will develop a series of rankings to see how the `major_category` levels
 -   Assign/create a *rank* for each summarized value (rank for `total`, rank for `sharewomen`, etc.) and provide a meaningful name to each ranked column value. This ranking function might be confusing. Read the help documentation and ask for clarification.
 -   Arrange the results so that `major_category` appear in alphabetical order ("A" at the top).
 
+```{r category_rankings, message=FALSE}
+college_recent_grads %>% 
+  group_by(major_category) %>% 
+  summarize(
+    total = sum (total), 
+    median_sharewomen = median(sharewomen), 
+    median_unemployment_rate = median(unemployment_rate), 
+    median_earn = median(median)
+  ) %>% 
+  arrange(major_category) %>% 
+  knitr::kable()
+```
+
 Provide a discussion on how the `major_category` rankings compare.
 
-**Response**:
+**Response**: Business major category has the highest graduates. Computer and mathematics has most earnings.
 
 ![](README-img/noun_pause.png) **(Final) Planned Pause Point**: If you have any questions, contact your instructor.
 Otherwise feel free to continue on.
